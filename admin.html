@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - AKDesign</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #8a0003 0%, #8a0002aa 100%);
+            min-height: 100vh;
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .dark-theme .sidebar {
+            background: #1a1a2e;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .sidebar-header {
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .sidebar-header h2::after {
+            display: none;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dark-theme .nav-item {
+            color: #aaa;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #8a0003;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #8a0003, #8a0002aa);
+            color: white;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .top-bar {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .page-title h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-icon {
+            background: rgba(102, 126, 234, 0.1);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #8a0003;
+        }
+
+        .btn-icon:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-theme .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 2.5rem;
+            opacity: 0.2;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .section-header h2::after {
+            display: none;
+        }
+
+        /* Messages Cards */
+        .messages-container {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .message-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dark-theme .message-card {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-card.unread {
+            border-left: 4px solid #8a0003;
+            background: linear-gradient(90deg, rgba(138, 0, 3, 0.05), white);
+        }
+
+        .dark-theme .message-card.unread {
+            background: linear-gradient(90deg, rgba(138, 0, 3, 0.1), rgba(255, 255, 255, 0.05));
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .message-sender {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .sender-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8a0003, #8a0002aa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .sender-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .sender-info p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .message-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-unread {
+            background: #8a0003;
+            color: white;
+        }
+
+        .badge-read {
+            background: #4caf50;
+            color: white;
+        }
+
+        .message-subject {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        .message-content {
+            background: rgba(0, 0, 0, 0.02);
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 0.75rem 0;
+            line-height: 1.6;
+        }
+
+        .dark-theme .message-content {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-theme .message-footer {
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .message-date {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .btn-read {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Newsletter Cards */
+        .newsletter-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .newsletter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .newsletter-card {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .newsletter-card:hover {
+            transform: translateX(5px);
+        }
+
+        .newsletter-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .newsletter-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8a0003;
+        }
+
+        .newsletter-email {
+            font-weight: 500;
+        }
+
+        .newsletter-date {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        /* Loading */
+        .loading-container {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(138, 0, 3, 0.2);
+            border-top-color: #8a0003;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+        }
+
+        .dark-theme .empty-state {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .menu-toggle {
+                display: flex;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #8a0003;
+                color: white;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 200;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            }
+        }
+
+        @media (min-width: 769px) {
+            .menu-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle (mobile) -->
+    <div class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>AKD<span style="color: #8a0003;">esign</span></h2>
+            <p>Tableau de bord</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-item active" data-section="messages">
+                <i class="fas fa-envelope"></i>
+                <span>Messages</span>
+            </div>
+            <div class="nav-item" data-section="newsletter">
+                <i class="fas fa-users"></i>
+                <span>Newsletter</span>
+            </div>
+            <div class="nav-item" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Tableau de bord</h1>
+                <p>Bienvenue, Administrateur</p>
+            </div>
+            <div class="top-actions">
+                <button id="refresh-btn" class="btn-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button id="theme-toggle" class="btn-icon">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Messages -->
+        <div id="messages-section">
+            <div class="stats-grid" id="stats"></div>
+            <div class="section-header">
+                <h2><i class="fas fa-inbox"></i> Messages récents</h2>
+            </div>
+            <div id="messages-list" class="messages-container">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <p>Chargement des messages...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Newsletter -->
+        <div id="newsletter-section" style="display: none;">
+            <div class="stats-grid" id="newsletter-stats"></div>
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Abonnés à la newsletter</h2>
+                <button id="export-newsletter" class="btn-action" style="background: #4caf50; color: white; padding: 0.5rem 1rem;">
+                    <i class="fas fa-download"></i> Exporter CSV
+                </button>
+            </div>
+            <div id="newsletter-list" class="newsletter-grid">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <p>Chargement des abonnés...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYYmDT6VS0CjinithaTHvOIHuAkNl_wgE",
+            authDomain: "akdesign-85475.firebaseapp.com",
+            projectId: "akdesign-85475",
+            storageBucket: "akdesign-85475.firebasestorage.app",
+            messagingSenderId: "686787945620",
+            appId: "1:686787945620:web:3940580d4fdbe95d3a8081"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        
+        let currentSection = 'messages';
+        
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                loadMessages();
+                loadNewsletter();
+            }
+        });
+        
+        // Navigation
+        document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                currentSection = section;
+                
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                if (section === 'messages') {
+                    document.getElementById('messages-section').style.display = 'block';
+                    document.getElementById('newsletter-section').style.display = 'none';
+                } else {
+                    document.getElementById('messages-section').style.display = 'none';
+                    document.getElementById('newsletter-section').style.display = 'block';
+                }
+            });
+        });
+        
+        document.getElementById('refresh-btn')?.addEventListener('click', () => {
+            loadMessages();
+            loadNewsletter();
+        });
+        
+        document.getElementById('logout-btn')?.addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'admin-login.html';
+        });
+        
+        // Theme toggle
+        document.getElementById('theme-toggle')?.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('admin-theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        });
+        
+        if (localStorage.getItem('admin-theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+        
+        // Mobile menu
+        document.getElementById('menu-toggle')?.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Load Messages
+        async function loadMessages() {
+            const container = document.getElementById('messages-list');
+            container.innerHTML = '<div class="loading-container"><div class="spinner"></div><p>Chargement des messages...</p></div>';
+            
+            try {
+                const q = query(collection(db, 'messages'), orderBy('date', 'desc'));
+                const querySnapshot = await getDocs(q);
+                const messages = [];
+                querySnapshot.forEach((doc) => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayMessages(messages);
+                updateStats(messages);
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>';
+            }
+        }
+        
+        function displayMessages(messages) {
+            const container = document.getElementById('messages-list');
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Aucun message pour le moment</p></div>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => `
+                <div class="message-card ${msg.lu ? '' : 'unread'}">
+                    <div class="message-header">
+                        <div class="message-sender">
+                            <div class="sender-avatar">${(msg.nom?.charAt(0) || '?').toUpperCase()}</div>
+                            <div class="sender-info">
+                                <h4>${escapeHtml(msg.nom)}</h4>
+                                <p>${escapeHtml(msg.email)}</p>
+                            </div>
+                        </div>
+                        <div class="message-badges">
+                            <span class="badge ${msg.lu ? 'badge-read' : 'badge-unread'}">
+                                ${msg.lu ? '<i class="fas fa-check-circle"></i> Lu' : '<i class="fas fa-clock"></i> Non lu'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="message-subject">
+                        <i class="fas fa-tag"></i> ${escapeHtml(msg.sujet || 'Sans sujet')}
+                    </div>
+                    <div class="message-content">
+                        ${escapeHtml(msg.message)}
+                    </div>
+                    <div class="message-footer">
+                        <div class="message-date">
+                            <i class="fas fa-calendar"></i> ${new Date(msg.date).toLocaleString('fr-FR')}
+                            ${msg.ip ? ` | <i class="fas fa-network-wired"></i> ${msg.ip}` : ''}
+                        </div>
+                        <div class="message-actions">
+                            ${!msg.lu ? `<button class="btn-action btn-read" onclick="markAsRead('${msg.id}')"><i class="fas fa-check"></i> Marquer lu</button>` : ''}
+                            <button class="btn-action btn-delete" onclick="deleteMessage('${msg.id}')"><i class="fas fa-trash"></i> Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateStats(messages) {
+            const stats = document.getElementById('stats');
+            const total = messages.length;
+            const unread = messages.filter(m => !m.lu).length;
+            
+            stats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="stat-value">${total}</div>
+                    <div class="stat-label">Total messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-value">${unread}</div>
+                    <div class="stat-label">Non lus</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-value">${total - unread}</div>
+                    <div class="stat-label">Lus</div>
+                </div>
+            `;
+        }
+        
+        window.markAsRead = async (id) => {
+            try {
+                const messageRef = doc(db, 'messages', id);
+                await updateDoc(messageRef, { lu: true });
+                loadMessages();
+            } catch (error) {
+                alert('Erreur lors de la mise à jour');
+            }
+        };
+        
+        window.deleteMessage = async (id) => {
+            if (confirm('⚠️ Supprimer définitivement ce message ?')) {
+                try {
+                    await deleteDoc(doc(db, 'messages', id));
+                    loadMessages();
+                } catch (error) {
+                    alert('Erreur lors de la suppression');
+                }
+            }
+        };
+        
+        // Load Newsletter
+        async function loadNewsletter() {
+            const container = document.getElementById('newsletter-list');
+            container.innerHTML = '<div class="loading-container"><div class="spinner"></div><p>Chargement des abonnés...</p></div>';
+            
+            try {
+                const q = query(collection(db, 'newsletter'), orderBy('date', 'desc'));
+                const querySnapshot = await getDocs(q);
+                const subscribers = [];
+                querySnapshot.forEach((doc) => {
+                    subscribers.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayNewsletter(subscribers);
+                updateNewsletterStats(subscribers);
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>';
+            }
+        }
+        
+        function displayNewsletter(subscribers) {
+            const container = document.getElementById('newsletter-list');
+            
+            if (subscribers.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>Aucun abonné pour le moment</p></div>';
+                return;
+            }
+            
+            container.innerHTML = subscribers.map(sub => `
+                <div class="newsletter-card">
+                    <div class="newsletter-info">
+                        <div class="newsletter-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <div class="newsletter-email">${escapeHtml(sub.email)}</div>
+                            <div class="newsletter-date"><i class="fas fa-calendar"></i> Inscrit le ${new Date(sub.date).toLocaleString('fr-FR')}</div>
+                        </div>
+                    </div>
+                    <button class="btn-action btn-delete" onclick="deleteNewsletter('${sub.id}')">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function updateNewsletterStats(subscribers) {
+            const stats = document.getElementById('newsletter-stats');
+            const total = subscribers.length;
+            const now = new Date();
+            const thisMonth = subscribers.filter(sub => {
+                const subDate = new Date(sub.date);
+                return subDate.getMonth() === now.getMonth() && subDate.getFullYear() === now.getFullYear();
+            }).length;
+            
+            stats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value">${total}</div>
+                    <div class="stat-label">Total abonnés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-plus"></i></div>
+                    <div class="stat-value">${thisMonth}</div>
+                    <div class="stat-label">Nouveaux ce mois</div>
+                </div>
+            `;
+        }
+        
+        window.deleteNewsletter = async (id) => {
+            if (confirm('⚠️ Supprimer définitivement cet email ?')) {
+                try {
+                    await deleteDoc(doc(db, 'newsletter', id));
+                    loadNewsletter();
+                } catch (error) {
+                    alert('Erreur lors de la suppression');
+                }
+            }
+        };
+        
+        document.getElementById('export-newsletter')?.addEventListener('click', async () => {
+            try {
+                const q = query(collection(db, 'newsletter'), orderBy('date', 'desc'));
+                const querySnapshot = await getDocs(q);
+                const subscribers = [];
+                querySnapshot.forEach((doc) => {
+                    subscribers.push({ id: doc.id, ...doc.data() });
+                });
+                
+                if (subscribers.length === 0) {
+                    alert('Aucun abonné à exporter');
+                    return;
+                }
+                
+                let csvContent = "Email;Date d'inscription;IP\n";
+                subscribers.forEach(sub => {
+                    csvContent += `${sub.email};${new Date(sub.date).toLocaleString('fr-FR')};${sub.ip || 'Non disponible'}\n`;
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.setAttribute('download', 'newsletter_abonnes.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Erreur lors de l\'export');
+            }
+        });
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    </script>
+</body>
+</html>
